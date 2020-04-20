@@ -14,12 +14,15 @@ type DropDownProps = {
 }
 
 const DropDown = (props: DropDownProps) => (
-  <Select onChange={(e) => props.onChange(Number(e.target.value))}>
+  <Select
+    defaultValue={props.selected}
+    onChange={(e) => props.onChange(Number(e.target.value))}
+  >
     <option value="" disabled>
       {props.label}
     </option>
     {props.options.map((v: any): any => (
-      <option selected={v === props.selected} value={v}>
+      <option key={`k-${v}`} value={v}>
         {(props.selectTitle && props.selectTitle(v)) || v}
       </option>
     ))}

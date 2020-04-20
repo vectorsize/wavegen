@@ -121,6 +121,7 @@ function Main() {
       <Harmonies>
         {harmonics.map((h) => (
           <VerticalSlider
+            key={`slider${h}`}
             onChange={(e) => {
               update(h, e)
             }}
