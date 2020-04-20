@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import Slider from './slider'
 import Waveform from './waveform'
 import Dropdown from './dropdown'
+import Sound from './sound'
 
 import {
   harms,
@@ -13,24 +14,20 @@ import {
   setAmplitude,
 } from '../lib/utils'
 
-import { makeSine, makeSquare, makeSaw, makeTriangle } from '../presets'
-
-// Constants
-// --
-const numHarmonics = 16
-const fundamental = 440
-
-// Presets
-const SINE = makeSine(numHarmonics)
-const SQUARE = makeSquare(numHarmonics)
-const SAW = makeSaw(numHarmonics)
-const TRIANGLE = makeTriangle(numHarmonics)
-
-const width = 300
-const height = 200
-const sampleRates = [22050, 44100, 48000, 88200, 96000]
-const bits = [8, 16, 24, 32]
-const tableSizes = [128, 256, 512, 1024, 2048, 4096]
+import {
+  numHarmonics,
+  fundamental,
+  width,
+  height,
+  sampleRates,
+  bits,
+  tableSizes,
+  SINE,
+  SQUARE,
+  SAW,
+  TRIANGLE,
+  frequencies,
+} from './constants'
 
 // Components
 // --
@@ -55,16 +52,16 @@ const Settings = styled.div``
 
 const Button = styled.button``
 
+// App
+// --
 function Main() {
   const [sampleRate, setSampleRate] = useState(44100)
   const [bitRate, setBitRate] = useState(bits[3])
   const [amplitudes, setAmplitudes] = useState(SINE)
-  // const [amplitudes, setAmplitudes] = useState(initAmps(numHarmonics))
   const [tableSize, setTableSize] = useState(1024)
 
   const update = setAmplitude([amplitudes, setAmplitudes])
 
-  // const allFrequencies = freqs(numHarmonics, fundamental)
   const allOscillators = oscillators(
     numHarmonics,
     fundamental,
@@ -81,6 +78,7 @@ function Main() {
 
   return (
     <App>
+      <Sound {...{ amplitudes, frequencies, sampleRate }} />
       <Settings>
         Settings
         <Dropdown
