@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 
 import Keyboard from './keyboard'
 import { numHarmonics } from './constants'
+import Button from './button'
 
 type SoundProps = {
   amplitudes: number[]
@@ -9,8 +10,8 @@ type SoundProps = {
   sampleRate: number
 }
 
-const attackTime = 0.2
-const releaseTime = 0.2
+const attackTime = 0.15
+const releaseTime = 0.15
 
 // Singletons
 // --
@@ -60,8 +61,8 @@ const Sound = ({ amplitudes, frequencies }: SoundProps) => {
 
   return (
     <div>
-      <button onClick={() => audioCtx.resume()}>Start Sound</button>
-      <button onClick={() => audioCtx.suspend()}>Stop Sound</button>
+      <Button onClick={() => audioCtx.resume()}>Start Sound</Button>
+      <Button onClick={() => audioCtx.suspend()}>Stop Sound</Button>
       <Keyboard
         onKeyPressed={(f: number) => {
           setFreq(f)

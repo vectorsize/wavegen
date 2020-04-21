@@ -5,6 +5,8 @@ import Slider from './slider'
 import Waveform from './waveform'
 import Dropdown from './dropdown'
 import Sound from './sound'
+import DownloadLink from './download'
+import Button from './button'
 
 import {
   harms,
@@ -50,8 +52,6 @@ const VerticalSlider = styled(Slider)`
 `
 
 const Settings = styled.div``
-
-const Button = styled.button``
 
 // App
 // --
@@ -130,6 +130,12 @@ function Main() {
           />
         ))}
       </Harmonies>
+      <DownloadLink
+        name="wave-table.wav"
+        buffer={normalizedData}
+        sampleRate={sampleRate}
+        length={tableSize}
+      />
     </App>
   )
 }
