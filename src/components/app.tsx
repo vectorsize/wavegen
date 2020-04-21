@@ -26,6 +26,7 @@ import {
   SQUARE,
   SAW,
   TRIANGLE,
+  randomAmps,
   frequencies,
 } from './constants'
 
@@ -115,6 +116,7 @@ function Main() {
         <Button onClick={() => setAmplitudes(TRIANGLE)}>Triangle</Button>
         <Button onClick={() => setAmplitudes(SAW)}>Saw</Button>
         <Button onClick={() => setAmplitudes(SQUARE)}>Square</Button>
+        <Button onClick={() => setAmplitudes(randomAmps())}>Random</Button>
       </div>
       <Harmonies>
         {harmonics.map((h) => (
@@ -123,6 +125,7 @@ function Main() {
             onChange={(e) => {
               update(h, e)
             }}
+            value={amplitudes[h]}
             step={0.01}
           />
         ))}

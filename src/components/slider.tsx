@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent } from 'react'
+import React, { ChangeEvent } from 'react'
 import styled from 'styled-components'
 
 const Input = styled.div`
@@ -8,13 +8,14 @@ const Input = styled.div`
 `
 
 type SliderProps = {
+  value: number
   label?: string
   min?: number
   max?: number
   step?: number
   uiValue?: number
   onChange: (v: number) => void
-  unit?: string,
+  unit?: string
   className?: string
 }
 
@@ -26,17 +27,13 @@ const Slider = (props: SliderProps) => {
     max = 1,
     step = 0.1,
     uiValue = 0,
+    value,
     onChange,
-    className = ''
+    className = '',
   } = props
 
-  const [value, setValue] = useState(0.0)
-
-  const update = (e: ChangeEvent<HTMLInputElement>) => {
-    const v = Number(e.target.value)
-    setValue(v)
-    onChange(v)
-  }
+  const update = (e: ChangeEvent<HTMLInputElement>) =>
+    onChange(Number(e.target.value))
 
   return (
     <Input className={className}>
