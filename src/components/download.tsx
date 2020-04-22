@@ -1,4 +1,6 @@
 import React from 'react'
+import styled from 'styled-components'
+
 import saveArray from '../lib/saveBuffer'
 
 type DownloadProps = {
@@ -8,14 +10,21 @@ type DownloadProps = {
   length: number
 }
 
+const A = styled.a`
+  text-decoration: none;
+  color: black;
+  border: 1px solid;
+  padding: 3px;
+`
+
 const DownloadLink = (props: DownloadProps) => {
   const { name, buffer, sampleRate, length } = props
   const href = URL.createObjectURL(saveArray(buffer, sampleRate, length))
 
   return (
-    <a download={name} href={href}>
+    <A download={name} href={href}>
       Download
-    </a>
+    </A>
   )
 }
 

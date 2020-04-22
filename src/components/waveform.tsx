@@ -11,6 +11,7 @@ type WaveformProps = {
   height?: number
   lineWidth?: number
   strokeStyle?: string
+  className?: string
 }
 
 const Waveform = (props: WaveformProps) => {
@@ -20,6 +21,7 @@ const Waveform = (props: WaveformProps) => {
     height = 100,
     lineWidth = 3,
     strokeStyle = 'red',
+    className = '',
   } = props
 
   const canvasRef = createRef<HTMLCanvasElement>()
@@ -48,6 +50,13 @@ const Waveform = (props: WaveformProps) => {
     }
   }, [canvasRef, data, height, lineWidth, strokeStyle, width])
 
-  return <Canvas width={`${width}px`} height={`${height}px`} ref={canvasRef} />
+  return (
+    <Canvas
+      className={className}
+      width={`${width}px`}
+      height={`${height}px`}
+      ref={canvasRef}
+    />
+  )
 }
 export default Waveform

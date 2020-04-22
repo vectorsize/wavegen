@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 
 import Slider from './slider'
-import Waveform from './waveform'
+import Wave from './waveform'
 import Dropdown from './dropdown'
 import Sound from './sound'
 import DownloadLink from './download'
 import Button from './button'
 
-import { harms, allSines, normalize, setAmplitude } from '../lib/utils'
+import { harms, normalize, setAmplitude } from '../lib/utils'
 
 import {
   numHarmonics,
@@ -22,7 +22,6 @@ import {
   SINE,
   SQUARE,
   SAW,
-  TRIANGLE,
   randomAmps,
 } from './constants'
 
@@ -45,7 +44,15 @@ const VerticalSlider = styled(Slider)`
   transform: rotate(-90deg);
 `
 
-const Settings = styled.div``
+const Waveform = styled(Wave)`
+  margin-bottom: 3px;
+`
+
+const Settings = styled.div`
+  border: 1px solid;
+  margin: 3px 0;
+  padding: 3px;
+`
 
 const TWO_PI = 2 * Math.PI
 const PIO_TWO = Math.PI * 0.5
@@ -77,7 +84,7 @@ function Main() {
   })
 
   const frequencies = dataStructure.map((i) => {
-    return 220 * i
+    return fundamental * i
   })
 
   let allData: number[] = []
@@ -97,13 +104,36 @@ function Main() {
   // only normalize when more than 1 tables populated
   const populated: boolean = amplitudes.filter(Boolean).length > 1
   const normalizedData = populated ? normalize(allData) : allData
-  // const normalizedData = allSineWaves
 
   return (
     <App>
       <Sound {...{ amplitudes, frequencies, sampleRate }} />
+      <Waveform
+        width={width}
+        height={height}
+        data={normalizedData}
+        lineWidth={2}
+      />
+      <div>
+        <Button onClick={() => setAmplitudes(SINE)}>Sine</Button>
+        <Button onClick={() => setAmplitudes(SAW)}>Saw</Button>
+        <Button onClick={() => setAmplitudes(SQUARE)}>Square</Button>
+        <Button onClick={() => setAmplitudes(randomAmps())}>Random</Button>
+      </div>
+      <Harmonies>
+        {harmonics.map((h) => (
+          <VerticalSlider
+            key={`slider${h}`}
+            onChange={(e) => {
+              update(h, e)
+            }}
+            value={amplitudes[h]}
+            step={0.01}
+          />
+        ))}
+      </Harmonies>
       <Settings>
-        Settings
+        Export Settings
         <Dropdown
           options={sampleRates}
           label={'Sample Rate'}
@@ -126,31 +156,6 @@ function Main() {
           onChange={setTableSize}
         />
       </Settings>
-      <Waveform
-        width={width}
-        height={height}
-        data={normalizedData}
-        lineWidth={2}
-      />
-      <div>
-        <Button onClick={() => setAmplitudes(SINE)}>Sine</Button>
-        {/* <Button onClick={() => setAmplitudes(TRIANGLE)}>Triangle</Button> */}
-        <Button onClick={() => setAmplitudes(SAW)}>Saw</Button>
-        <Button onClick={() => setAmplitudes(SQUARE)}>Square</Button>
-        <Button onClick={() => setAmplitudes(randomAmps())}>Random</Button>
-      </div>
-      <Harmonies>
-        {harmonics.map((h) => (
-          <VerticalSlider
-            key={`slider${h}`}
-            onChange={(e) => {
-              update(h, e)
-            }}
-            value={amplitudes[h]}
-            step={0.01}
-          />
-        ))}
-      </Harmonies>
       <DownloadLink
         name="wave-table.wav"
         buffer={normalizedData}

@@ -50,12 +50,15 @@ for (let i = 0; i < numHarmonics; i++) {
 
 const Sound = ({ amplitudes, frequencies }: SoundProps) => {
   const [freq, setFreq] = useState(220)
+
   useEffect(() => {
-    amplitudes.map((a, i): void => {
+    if (!freq) return
+    amplitudes.map((a, i): false => {
       const g = gains[i]
       const osc = oscillators[i]
-      g.gain.setValueAtTime(a * 0.9, audioCtx.currentTime)
+      g.gain.linearRampToValueAtTime(a * 0.9, audioCtx.currentTime)
       osc.frequency.value = freq
+      return false
     })
   }, [amplitudes, freq, frequencies])
 
