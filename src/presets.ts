@@ -5,17 +5,17 @@
 const inv = (n: number) => 1 / n
 const sq = (n: number) => n * n
 
-export const makeSine = (numHarmonics: number) =>
+export const makeSineAmplitudes = (numHarmonics: number) =>
   [1].concat(new Array(numHarmonics - 1).fill(0))
 
-export const makeSquare = (numHarmonics: number) =>
+export const makeSquareAmplitudes = (numHarmonics: number) =>
   [1].concat(
     new Array(numHarmonics - 1)
       .fill(0)
       .map((v, i) => ((i + 1) % 2 === 0 ? inv(i + 2) : v))
   )
 
-export const makeSaw = (numHarmonics: number) =>
+export const makeSawAmplitudes = (numHarmonics: number) =>
   [1].concat(new Array(numHarmonics - 1).fill(0).map((v, i) => inv(i + 2)))
 
 const odds = (numHarmonics: number) =>
@@ -28,7 +28,7 @@ const odds = (numHarmonics: number) =>
       {}
     )
 
-export const makeTriangle = (numHarmonics: number) =>
+export const makeTriangleAmplitudes = (numHarmonics: number) =>
   [1].concat(
     new Array(numHarmonics - 1)
       .fill(0)

@@ -1,36 +1,27 @@
-import Oscillator from '../lib/oscillator'
-
+import { TWO_PI } from '../components/constants'
 // data
 // --
 export const harms = (nHarmonics: number): number[] =>
   new Array(nHarmonics).fill(0).map((_, i) => i)
 
-export const oscillators = (
-  nHarmonics: number,
-  F: number,
-  SR: number,
-  size?: number
-): number[][] =>
-  new Array(nHarmonics)
+const makeSine = (freq: number, amp: number, size: number) =>
+  new Array(size)
     .fill(0)
-    .map((_, i) => new Oscillator((i + 1) * F, SR, size).sine())
-
-export const freqs = (nHarmonics: number, F: number): number[] =>
-  new Array(nHarmonics).fill(0).map((_, i) => (i + 1) * F)
+    .map((_, i) => i)
+    .map((i: number) => {
+      return Math.cos(((i * freq) / size) * TWO_PI) * amp
+    })
 
 export const allSines = (
-  oscillators: number[][],
-  amplitudes: number[]
+  nHarmonics: number,
+  amplitudes: number[],
+  tableSize: number
 ): number[] =>
-  oscillators
-    .map((o, i) => o.map((f) => f * amplitudes[i]))
-    .reduce((added, v) => {
-      v.map((f, i) => {
-        added[i] = added[i] ? added[i] + f : f
-        return f
-      })
-      return added
-    }, [])
+  new Array(nHarmonics)
+    .fill(0)
+    .map((_, i) => i)
+    .map((v, i) => makeSine(i + 1, amplitudes[v], tableSize))
+    .reduce((all, v) => v.map((l, i) => (all[i] ? all[i] + l : l)), [])
 
 export const scale = (
   value: number,

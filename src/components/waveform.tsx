@@ -2,7 +2,6 @@ import React, { createRef, useEffect } from 'react'
 import styled from 'styled-components'
 
 const Canvas = styled.canvas`
-  width: 200px;
   border: 1px solid;
 `
 
@@ -10,61 +9,45 @@ type WaveformProps = {
   data: number[]
   width?: number
   height?: number
-  amp?: number
   lineWidth?: number
   strokeStyle?: string
 }
-
-const scale = (height: number) => (y: number) => (y + 1) * (height / 2)
 
 const Waveform = (props: WaveformProps) => {
   const {
     data = [],
     width = 100,
     height = 100,
-    amp = 1,
     lineWidth = 3,
     strokeStyle = 'red',
   } = props
 
   const canvasRef = createRef<HTMLCanvasElement>()
-
   useEffect(() => {
     if (canvasRef.current) {
-      const canvas = canvasRef.current
-      // const { width, height } = canvas
-      const ctx: CanvasRenderingContext2D = canvas.getContext(
-        '2d'
-      ) as CanvasRenderingContext2D
-      const scaleY = scale(height)
-      let y = 0
-
+      const ctx = canvasRef.current.getContext('2d') as CanvasRenderingContext2D
+      ctx.clearRect(0, 0, width, height)
       ctx.lineWidth = lineWidth
       ctx.strokeStyle = strokeStyle
-
-      ctx.clearRect(0, 0, width, height)
+      const vPos = height * 0.5
+      const tableSize = data.length
+      const step = tableSize / width
+      // always start in first sample
+      const start = data[0] * vPos + vPos
 
       ctx.beginPath()
+      ctx.moveTo(0, start)
 
-      // start position
-      ctx.moveTo(0, height / 2)
-
-      for (let x = 0; x <= width; x++) {
-        // from previous sample
-        ctx.moveTo(x, scaleY(y))
-
-        y = data[x] * amp
-
-        // to current sample
-        ctx.lineTo(x + 1, scaleY(y))
+      for (let x = 0; x < width; x++) {
+        const y = data[Math.ceil(x * step)] * vPos + vPos
+        ctx.lineTo(x, y)
       }
 
-      // end line
       ctx.stroke()
       ctx.closePath()
     }
-  }, [amp, data, canvasRef, height, lineWidth, strokeStyle, width])
+  }, [canvasRef, data, height, lineWidth, strokeStyle, width])
 
-  return <Canvas width={width} height={height} ref={canvasRef} />
+  return <Canvas width={`${width}px`} height={`${height}px`} ref={canvasRef} />
 }
 export default Waveform

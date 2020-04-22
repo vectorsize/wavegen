@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 
 import Slider from './slider'
@@ -8,16 +8,11 @@ import Sound from './sound'
 import DownloadLink from './download'
 import Button from './button'
 
-import {
-  harms,
-  oscillators,
-  allSines,
-  normalize,
-  setAmplitude,
-} from '../lib/utils'
+import { harms, allSines, normalize, setAmplitude } from '../lib/utils'
 
 import {
   numHarmonics,
+  defaultTableSize,
   fundamental,
   width,
   height,
@@ -29,7 +24,6 @@ import {
   SAW,
   TRIANGLE,
   randomAmps,
-  frequencies,
 } from './constants'
 
 // Components
@@ -53,29 +47,57 @@ const VerticalSlider = styled(Slider)`
 
 const Settings = styled.div``
 
-// App
-// --
+const TWO_PI = 2 * Math.PI
+const PIO_TWO = Math.PI * 0.5
+
 function Main() {
   const [sampleRate, setSampleRate] = useState(44100)
   const [bitRate, setBitRate] = useState(bits[3])
   const [amplitudes, setAmplitudes] = useState(SINE)
-  const [tableSize, setTableSize] = useState(1024)
+  const [tableSize, setTableSize] = useState(defaultTableSize)
 
   const update = setAmplitude([amplitudes, setAmplitudes])
-
-  const allOscillators = oscillators(
-    numHarmonics,
-    fundamental,
-    sampleRate,
-    tableSize
-  )
-
-  const allSineWaves = allSines(allOscillators, amplitudes)
   const harmonics = harms(numHarmonics)
+
+  const dataStructure = new Array(numHarmonics).fill(0).map((_, i) => i)
+
+  const makeSine = (freq: number, amp: number, tableSize: number) => {
+    return new Array(tableSize)
+      .fill(0)
+      .map((_, i) => i)
+      .map((i) => {
+        return Math.cos(((i * freq) / tableSize) * TWO_PI + PIO_TWO) * amp
+      })
+  }
+
+  const allWaves = dataStructure.map((i) => {
+    const f = i + 1
+    const amp = amplitudes[i]
+    return makeSine(f, amp, tableSize)
+  })
+
+  const frequencies = dataStructure.map((i) => {
+    return 220 * i
+  })
+
+  let allData: number[] = []
+  for (let h = 0; h < numHarmonics; h++) {
+    for (let i = 0; i < tableSize; i++) {
+      const d = Number(allWaves[h][i]) + Number(allWaves[h][i])
+      if (allData[i]) {
+        allData[i] = allData[i] + d
+      } else {
+        allData[i] = d
+      }
+    }
+  }
+
+  allData = normalize(allData)
 
   // only normalize when more than 1 tables populated
   const populated: boolean = amplitudes.filter(Boolean).length > 1
-  const normalizedData = populated ? normalize(allSineWaves) : allSineWaves
+  const normalizedData = populated ? normalize(allData) : allData
+  // const normalizedData = allSineWaves
 
   return (
     <App>
@@ -109,11 +131,10 @@ function Main() {
         height={height}
         data={normalizedData}
         lineWidth={2}
-        amp={0.8}
       />
       <div>
         <Button onClick={() => setAmplitudes(SINE)}>Sine</Button>
-        <Button onClick={() => setAmplitudes(TRIANGLE)}>Triangle</Button>
+        {/* <Button onClick={() => setAmplitudes(TRIANGLE)}>Triangle</Button> */}
         <Button onClick={() => setAmplitudes(SAW)}>Saw</Button>
         <Button onClick={() => setAmplitudes(SQUARE)}>Square</Button>
         <Button onClick={() => setAmplitudes(randomAmps())}>Random</Button>
