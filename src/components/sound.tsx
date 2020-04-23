@@ -3,11 +3,14 @@ import React, { useState, useEffect } from 'react'
 import Keyboard from './keyboard'
 import { numHarmonics } from './constants'
 import Button from './button'
+import { SoundIcon, SoundOffIcon } from './icons/index'
 
 type SoundProps = {
   amplitudes: number[]
   frequencies: number[]
   sampleRate: number
+  iconWidth: number
+  iconHeight: number
 }
 
 const attackTime = 0.15
@@ -48,7 +51,12 @@ for (let i = 0; i < numHarmonics; i++) {
   oscillators.push(osc)
 }
 
-const Sound = ({ amplitudes, frequencies }: SoundProps) => {
+const Sound = ({
+  amplitudes,
+  frequencies,
+  iconWidth,
+  iconHeight,
+}: SoundProps) => {
   const [freq, setFreq] = useState(220)
 
   useEffect(() => {
@@ -64,8 +72,12 @@ const Sound = ({ amplitudes, frequencies }: SoundProps) => {
 
   return (
     <div>
-      <Button onClick={() => audioCtx.resume()}>Start Sound</Button>
-      <Button onClick={() => audioCtx.suspend()}>Stop Sound</Button>
+      <Button onClick={() => audioCtx.resume()}>
+        <SoundIcon width={iconWidth} height={iconHeight} />
+      </Button>
+      <Button onClick={() => audioCtx.suspend()}>
+        <SoundOffIcon width={iconWidth} height={iconHeight} />
+      </Button>
       <Keyboard
         onKeyPressed={(f: number) => {
           setFreq(f)

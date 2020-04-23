@@ -12,7 +12,7 @@ interface TrackProps {
 const Track = styled.div<TrackProps>`
   pointer-events: none;
   position: relative;
-  border: 1px solid;
+  border: none;
   width: ${(p) => p.width}px;
   height: ${(p) => p.height}px;
   background-color: ${(p) => p.backgroundColor};

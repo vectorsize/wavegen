@@ -7,8 +7,15 @@ import Sound from './sound'
 import DownloadLink from './download'
 import Button from './button'
 import MultiSlider from './multislider'
+import {
+  RandomIcon,
+  SineIcon,
+  SawIcon,
+  SquareIcon,
+  SettingsIcon,
+} from './icons/index'
 
-import { harms, normalize, setAmplitude } from '../lib/utils'
+import { normalize, setAmplitude } from '../lib/utils'
 
 import {
   numHarmonics,
@@ -30,6 +37,8 @@ import {
 const App = styled.div`
   display: flex;
   flex-direction: column;
+  background-color: black;
+  color: white;
 `
 
 const Waveform = styled(Wave)`
@@ -40,6 +49,12 @@ const Settings = styled.div`
   border: 1px solid;
   margin: 3px 0;
   padding: 3px;
+`
+
+const Buttons = styled.div<any>`
+  display: flex;
+  width: 300px;
+  justify-content: space-between;
 `
 
 const TWO_PI = 2 * Math.PI
@@ -87,25 +102,42 @@ function Main() {
 
   allData = normalize(allData)
 
+  const iconWidth = 60
+  const iconHeight = iconWidth
+
   // only normalize when more than 1 tables populated
   const populated: boolean = amplitudes.filter(Boolean).length > 1
   const normalizedData = populated ? normalize(allData) : allData
   // console.log(amplitudes)
   return (
     <App>
-      <Sound {...{ amplitudes, frequencies, sampleRate }} />
+      <Sound
+        {...{ amplitudes, frequencies, sampleRate, iconWidth, iconHeight }}
+      />
       <Waveform
         width={width}
         height={height}
         data={normalizedData}
         lineWidth={2}
+        strokeStyle="white"
       />
-      <div>
-        <Button onClick={() => setAmplitudes(SINE)}>Sine</Button>
-        <Button onClick={() => setAmplitudes(SAW)}>Saw</Button>
-        <Button onClick={() => setAmplitudes(SQUARE)}>Square</Button>
-        <Button onClick={() => setAmplitudes(randomAmps())}>Random</Button>
-      </div>
+      <Buttons>
+        <Button title="Select Sine" onClick={() => setAmplitudes(SINE)}>
+          <SineIcon width={iconWidth} height={iconWidth} />
+        </Button>
+        <Button title="Select Saw" onClick={() => setAmplitudes(SAW)}>
+          <SawIcon width={iconWidth} height={iconWidth} />
+        </Button>
+        <Button title="Select Square" onClick={() => setAmplitudes(SQUARE)}>
+          <SquareIcon width={iconWidth} height={iconWidth} />
+        </Button>
+        <Button
+          title="Select Random"
+          onClick={() => setAmplitudes(randomAmps())}
+        >
+          <RandomIcon width={iconWidth} height={iconWidth} />
+        </Button>
+      </Buttons>
       <MultiSlider
         knobs={numHarmonics}
         knobSize={300 / numHarmonics}
@@ -117,7 +149,7 @@ function Main() {
         }}
       />
       <Settings>
-        Export Settings
+        <SettingsIcon width={iconWidth} height={iconWidth} /> Export Settings
         <Dropdown
           options={sampleRates}
           label={'Sample Rate'}
@@ -145,6 +177,8 @@ function Main() {
         buffer={normalizedData}
         sampleRate={sampleRate}
         length={tableSize}
+        iconWidth={iconWidth}
+        iconHeight={iconHeight}
       />
     </App>
   )

@@ -1,0 +1,8 @@
+export { default as RandomIcon } from './random'
+export { default as SineIcon } from './sine'
+export { default as SawIcon } from './saw'
+export { default as SquareIcon } from './square'
+export { default as SoundIcon } from './sound'
+export { default as SoundOffIcon } from './sound-off'
+export { default as SaveIcon } from './save'
+export { default as SettingsIcon } from './settings'
