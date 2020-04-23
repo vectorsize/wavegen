@@ -7,6 +7,7 @@ import Dropdown from './dropdown'
 import Sound from './sound'
 import DownloadLink from './download'
 import Button from './button'
+import MultiSlider from './multislider'
 
 import { harms, normalize, setAmplitude } from '../lib/utils'
 
@@ -120,18 +121,30 @@ function Main() {
         <Button onClick={() => setAmplitudes(SQUARE)}>Square</Button>
         <Button onClick={() => setAmplitudes(randomAmps())}>Random</Button>
       </div>
-      <Harmonies>
+      <MultiSlider
+        knobSize={10}
+        width={170}
+        height={100}
+        valuesY={amplitudes}
+        onChange={(i: number, x: number, y: number) => {
+          update(i, y)
+        }}
+        knobs={17}
+        orientation="vertical"
+      />
+      {/* <Harmonies>
         {harmonics.map((h) => (
           <VerticalSlider
             key={`slider${h}`}
             onChange={(e) => {
+              console.log(h, e)
               update(h, e)
             }}
             value={amplitudes[h]}
             step={0.01}
           />
         ))}
-      </Harmonies>
+      </Harmonies> */}
       <Settings>
         Export Settings
         <Dropdown
