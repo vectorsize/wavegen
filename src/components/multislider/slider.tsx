@@ -6,10 +6,7 @@ import { clamp, checkInside } from './utils'
 interface TrackProps {
   width: number
   height: number
-}
-interface KnobProps {
-  size: number
-  top: number
+  backgroundColor: string
 }
 
 const Track = styled.div<TrackProps>`
@@ -18,15 +15,38 @@ const Track = styled.div<TrackProps>`
   border: 1px solid;
   width: ${(p) => p.width}px;
   height: ${(p) => p.height}px;
+  background-color: ${(p) => p.backgroundColor};
 `
+interface KnobProps {
+  size: number
+  top: number
+  color: string
+}
 const Knob = styled.div<KnobProps>`
   pointer-events: none;
   position: relative;
   width: ${(p) => p.size}px;
   height: ${(p) => p.size}px;
   top: ${(p) => p.top}px;
-  background-color: black;
+  background-color: ${(p) => p.color};
+  border-radius: 100%;
 `
+interface SlideProps {
+  height: number
+  width: number
+  slideColor: string
+}
+const Slide = styled.div<any>`
+  position: relative;
+  pointer-events: none;
+  background-color: ${(p) => p.slideColor};
+  height: ${(p) => p.height}px;
+  top: ${(p) => p.top}px;
+  left: ${(p) => p.left}px;
+  width: ${(p) => p.width}px;
+`
+
+const SLEW = 5
 
 class Slider extends Component<any, any> {
   ref: any = null
@@ -89,7 +109,7 @@ class Slider extends Component<any, any> {
           height - knobSize
         )
         const delta = Math.abs(knobPosition - newPos)
-        if (delta >= 5) {
+        if (delta >= SLEW) {
           setKnobPosition(newPos)
           const newValue = 1 - (newPos + halfKnob) / height
           onChange && onChange(newValue)
@@ -106,12 +126,35 @@ class Slider extends Component<any, any> {
 
   render() {
     const { ref } = this
-    const { width, height, knobSize } = this.props
+    const {
+      width,
+      height,
+      knobSize,
+      color,
+      backgroundColor,
+      slideColor,
+    } = this.props
     const { knobPosition } = this.state
 
+    const w = 3
+    const halfKnob = knobSize * 0.5
+    const halfWidth = w * 0.5
+
     return (
-      <Track ref={ref} width={width} height={height}>
-        <Knob size={knobSize} top={knobPosition} />
+      <Track
+        ref={ref}
+        width={width}
+        height={height}
+        backgroundColor={backgroundColor}
+      >
+        <Knob size={knobSize} top={knobPosition} color={color} />
+        <Slide
+          width={w}
+          left={halfKnob - halfWidth}
+          top={knobPosition - knobSize}
+          height={height - knobPosition}
+          slideColor={slideColor}
+        />
       </Track>
     )
   }

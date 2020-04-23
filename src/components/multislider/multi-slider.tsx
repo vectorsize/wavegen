@@ -32,6 +32,11 @@ const Wrapper = styled.div<any>`
   position: relative;
   display: flex;
   justify-content: space-between;
+  background-color: black;
+  padding-top: ${(p) => p.padding[0]}px;
+  padding-right: ${(p) => p.padding[1]}px;
+  padding-bottom: ${(p) => p.padding[2]}px;
+  padding-left: ${(p) => p.padding[3]}px;
 `
 
 class MultiSlider extends Component<any, any> {
@@ -109,19 +114,23 @@ class MultiSlider extends Component<any, any> {
     const { slidersData } = this
     const { position, isMouseDown } = this.state
     const { width, height, knobs, onChange, values } = this.props
-    const padding = 2
-    const sliderWidth = width / knobs + padding
+    const gutter = 0
+    const padding = [10, 10, 10, 10]
+    const sliderWidth = width / knobs + gutter
 
     return (
-      <Wrapper ref={this.ref} width={width} height={height}>
+      <Wrapper padding={padding} ref={this.ref} width={width} height={height}>
         {slidersData.map((s) => {
           return (
             <Slider
+              slideColor="white"
+              color="white"
+              backgroundColor="black"
               mouseDown={isMouseDown}
               key={`slider${s}`}
               knobSize={10}
               width={sliderWidth}
-              height={height}
+              height={height - (padding[0] + padding[2])}
               position={position}
               value={values[s]}
               onChange={(v: number) => onChange(s, v)}
