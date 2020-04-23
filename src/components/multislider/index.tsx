@@ -1,1 +1,1 @@
-export { default } from './multislider'
+export { default } from './multi-slider'
