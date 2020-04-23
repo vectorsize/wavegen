@@ -1,4 +1,11 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, {
+  Component,
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  createRef,
+} from 'react'
 import styled from 'styled-components'
 
 import { shimEvent, checkInside } from './utils'
@@ -18,27 +25,51 @@ const Multi = styled.div<MultiProps>`
   cursor: pointer;
 `
 
-const MultiSlider = (props: any) => {
-  const {
-    knobs,
-    orientation,
-    onChange,
-    width,
-    height,
-    knobSize,
-    valuesX,
-    valuesY,
-  } = props
+type PropTypes = {
+  knobs: number
+  orientation?: string
+  onChange: (index: number, x: number, y: number) => void
+  width: number
+  height: number
+  knobSize: number
+  valuesX?: number[]
+  valuesY?: number[]
+}
 
-  const knobData = new Array(knobs).fill(0).map((v, i) => i)
+type State = {
+  isMouseDown: boolean
+  position: { x: number; y: number }
+}
 
-  const ref = useRef<any>(false)
+class MultiSlider extends Component<PropTypes, State> {
+  ref: any = null
+  knobData: number[] = []
 
-  const [isMouseDown, setMouseDown] = useState(false)
-  const [position, setPosition] = useState({ x: 0, y: 0 })
+  state: State = {
+    isMouseDown: false,
+    position: { x: 0, y: 0 },
+  }
 
-  const onMouseDown = useCallback((e) => {
-    //console.log('MULTISLIDER::onMouseDown')
+  defaultProps: PropTypes = {
+    knobs: 1,
+    orientation: 'vertical',
+    onChange: () => {},
+    width: 100,
+    height: 100,
+    knobSize: 10,
+    valuesX: [],
+    valuesY: [],
+  }
+
+  constructor(props: PropTypes) {
+    super(props)
+    const { knobs } = props
+    this.ref = createRef<any>()
+    this.knobData = new Array(knobs).fill(0).map((v, i) => i)
+  }
+
+  onMouseDown = (e: MouseEvent) => {
+    const { setPosition, setMouseDown, ref } = this
 
     const event = shimEvent(e)
     const pos = {
@@ -51,67 +82,90 @@ const MultiSlider = (props: any) => {
       setPosition(pos)
       setMouseDown(true)
     }
-  }, [])
+  }
 
-  const onMouseUp = useCallback((e) => {
-    //console.log('MULTISLIDER::onMouseUp')
+  onMouseUp = (e: MouseEvent) => {
+    const { setMouseDown } = this
     setMouseDown(false)
-  }, [])
+  }
 
-  const onMouseMove: any = useCallback(
-    (e: any) => {
-      if (isMouseDown) {
-        //console.log('MULTISLIDER::onMouseMove isMouseDown')
-        const event = shimEvent(e)
-        setPosition({
-          x: event.pageX,
-          y: event.pageY,
-        })
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [isMouseDown]
-  )
+  onMouseMove = (e: MouseEvent) => {
+    const { setPosition, state } = this
+    const { isMouseDown } = state
+    if (isMouseDown) {
+      const event = shimEvent(e)
+      setPosition({
+        x: event.pageX,
+        y: event.pageY,
+      })
+    }
+  }
 
-  // DidMount
-  // --
-  useEffect(() => {
-    //console.log('MULTISLIDER::didmount')
+  setPosition = (position: { x: number; y: number }) => {
+    this.setState({ position })
+  }
+
+  setMouseDown = (isMouseDown: boolean) => {
+    this.setState({ isMouseDown })
+  }
+
+  componentWillUpdate() {
+    const { knobs } = this.props
+    this.knobData = new Array(knobs).fill(0).map((v, i) => i)
+  }
+
+  componentDidMount() {
+    const { onMouseDown, onMouseUp, onMouseMove } = this
     document.addEventListener('mousedown', onMouseDown)
     document.addEventListener('mouseup', onMouseUp)
     document.addEventListener('mousemove', onMouseMove)
-    return () => {
-      document.removeEventListener('mousedown', onMouseDown)
-      document.removeEventListener('mouseup', onMouseUp)
-      document.removeEventListener('mousemove', onMouseMove)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-  //console.log('MULTISLIDER::render')
+  }
 
-  return (
-    <Multi ref={ref} width={width} height={height}>
-      {knobData.map((k) => (
-        <Slider
-          valueX={(valuesX && valuesX[k]) || null}
-          valueY={(valuesY && valuesY[k]) || null}
-          position={position}
-          isMouseDown={isMouseDown}
-          background="rgba(0,0,0,0.2)"
-          key={`slider${k}`}
-          border={false}
-          container={ref}
-          orientation={orientation}
-          height={height}
-          width={width / knobs}
-          size={knobSize}
-          onChange={(x: number, y: number) => {
-            onChange(k, x, y)
-          }}
-        />
-      ))}
-    </Multi>
-  )
+  componentWillUnmount() {
+    const { onMouseDown, onMouseUp, onMouseMove } = this
+    document.removeEventListener('mousedown', onMouseDown)
+    document.removeEventListener('mouseup', onMouseUp)
+    document.removeEventListener('mousemove', onMouseMove)
+  }
+
+  render() {
+    const { knobData, ref } = this
+    const { position, isMouseDown } = this.state
+    const {
+      knobs,
+      orientation,
+      onChange,
+      width,
+      height,
+      knobSize,
+      valuesX,
+      valuesY,
+    } = this.props
+
+    return (
+      <Multi ref={ref} width={width} height={height}>
+        {knobData.map((k: number) => (
+          <Slider
+            valueX={(valuesX && valuesX[k]) || null}
+            valueY={(valuesY && valuesY[k]) || null}
+            position={position}
+            isMouseDown={isMouseDown}
+            background="rgba(0,0,0,0.2)"
+            key={`slider${k}`}
+            border={false}
+            container={ref}
+            orientation={orientation}
+            height={height}
+            width={width / knobs}
+            size={knobSize}
+            onChange={(x: number, y: number) => {
+              onChange(k, x, y)
+            }}
+          />
+        ))}
+      </Multi>
+    )
+  }
 }
 
 export default MultiSlider
